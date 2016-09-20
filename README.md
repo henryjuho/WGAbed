@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Output format
 
 
@@ -11,3 +12,6 @@ chr    start	end	strand	outgroups	outgroup_chr	alleles	pos	strands
 - strands ae the strands for the nucleotides listed in alleles column
 
 
+=======
+# maf_parse
+>>>>>>> 50c159e403368a7d8a41d551dc199ace23586c97
