@@ -43,7 +43,6 @@ def revpos(pos, seq_len, block_len):
 def create_bed_records(aln_block, spec, ref, score):
 
     bed_line = [aln_block[ref][0], int(aln_block[ref][1]), int(aln_block[ref][1]) + 1, aln_block[ref][3]]
-    # print(bed_line)
 
     species_lst = []
     chroms = []
@@ -112,10 +111,8 @@ with gzip.open(sys.argv[1]) as infile:
         if line.startswith('#'):
             continue
         elif line.startswith('a'):
-            # consider storing score at this stage
             align_score = line.split()[1].split('=')[1]
             align_block = {}
-            # block_start = 1
             continue
         elif line.startswith('s'):
             species = line.split()
@@ -123,14 +120,12 @@ with gzip.open(sys.argv[1]) as infile:
 
         else:
             # block_start = 0
-            # print(align_block)
             if ref_species not in align_block.keys():
                 align_block = {}
                 continue
             else:
                 ref_seq_entry = align_block[ref_species]
                 chrom = ref_seq_entry[0]
-                # print(chrom)
                 if chrom != ref_chrom:
                     continue
                 ref_strand = ref_seq_entry[3]
@@ -144,13 +139,8 @@ with gzip.open(sys.argv[1]) as infile:
                         else:
                             align_block[s][3] = '-'
 
-                # print(align_block)
-
                 create_bed_records(align_block, species_list, ref_species, align_score)
 
-                # else:
-                #     # print(align_block)
-                #     create_bed_records(align_block, species_list, ref_species, align_score)
 
 
 ##TODO check if the reference genomome is covered by more than one alignment in the MAF file
