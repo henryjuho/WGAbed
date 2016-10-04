@@ -23,6 +23,8 @@ present within a MAF block and '-' for INDELS in the alignment.
 - **strands** are the strands for the nucleotides listed in alleles column
 - **score** for the MAF alignment block
 
+
+##Example aligne site in the BED format
 ```
 chr8    30876827        30876828        +       Greattit,Chicken,Zebrafinch,Flycatcher  chr8,chr8,chr8,chr8    30876827,27030444,4090372,6147243       T,T,T,T +,-,+,- 170727.0
 ```
