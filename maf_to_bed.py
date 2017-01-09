@@ -39,7 +39,7 @@ def create_bed_records(aln_block, spec, ref, score):
 
     species_lst = []
     chroms = []
-    sites = []
+    sites = {}
     positions = []
     strands = []
 
@@ -47,51 +47,85 @@ def create_bed_records(aln_block, spec, ref, score):
 
     # print(len(aln_block[ref][5]))
     for pos in range(len(aln_block[ref][5])):
+
+        # delayed printing
+        if pos != 0 and aln_block[ref][5][pos] != '-':
+            bed_line_str = [str(s) for s in bed_line]
+
+            bed_line_str.append(','.join(species_lst))
+            bed_line_str.append(','.join(chroms))
+            bed_line_str.append(','.join(positions))
+            bed_line_str.append(','.join([sites[si] for si in species_lst]))
+            bed_line_str.append(','.join(strands))
+            bed_line_str.append(score)
+
+            print('\t'.join(bed_line_str))
+
+            del bed_line_str[4:]
+            del species_lst[:]
+            del chroms[:]
+            sites.clear()
+            del positions[:]
+            del strands[:]
+
+            # print(bed_line)
+            bed_line[1] += 1
+            bed_line[2] += 1
+
+        ins_rel_ref = False
         if aln_block[ref][5][pos] == '-':
-            gap_count[ref] += 1
-            continue
+                # gap_count[ref] += 1   # HB: used to keep ref coords correct after insertions relative to ref
+                ins_rel_ref = True  # allows base extraction and pos update without chr  and species etc being updated
+
         for sp in spec:
-            species_lst.append(sp)
+            if sp not in species_lst:
+                species_lst.append(sp)
+                sites[sp] = ''
+
             # start.append(aln_block[sp][1] + site_num)
             if sp in aln_block.keys():
-                sites.append(aln_block[sp][5][pos])
-                chroms.append(aln_block[sp][0])
-                strands.append(aln_block[sp][3])
+                sites[sp] += (aln_block[sp][5][pos])
+                if ins_rel_ref is False:
+                    chroms.append(aln_block[sp][0])
+                    strands.append(aln_block[sp][3])
 
                 if aln_block[sp][5][pos] == '-':
-                    positions.append('NA')
                     gap_count[sp] += 1
+                    if ins_rel_ref is False:
+                        positions.append('NA')
                 else:
-                    positions.append(str(int(aln_block[sp][1]) + pos - gap_count[sp]))
+                    if ins_rel_ref is False:
+                        positions.append(str(int(aln_block[sp][1]) + pos - gap_count[sp]))
 
             else:
-                sites.append('?')
-                chroms.append('?')
-                strands.append('?')
-                positions.append('?')
+                if ins_rel_ref is False:
+                    sites.append('?')
+                    chroms.append('?')
+                    strands.append('?')
+                    positions.append('?')
 
-        bed_line_str = [str(s) for s in bed_line]
+    # print final record in block
+    bed_line_str = [str(s) for s in bed_line]
 
-        bed_line_str.append(','.join(species_lst))
-        bed_line_str.append(','.join(chroms))
-        bed_line_str.append(','.join(positions))
-        bed_line_str.append(','.join(sites))
-        bed_line_str.append(','.join(strands))
-        bed_line_str.append(score)
+    bed_line_str.append(','.join(species_lst))
+    bed_line_str.append(','.join(chroms))
+    bed_line_str.append(','.join(positions))
+    bed_line_str.append(','.join([sites[si] for si in species_lst]))
+    bed_line_str.append(','.join(strands))
+    bed_line_str.append(score)
 
-        print('\t'.join(bed_line_str))
+    print('\t'.join(bed_line_str))
 
-        del bed_line_str[4:]
-        del species_lst[:]
-        del chroms[:]
-        del sites[:]
-        del positions[:]
-        del strands[:]
+    del bed_line_str[4:]
+    del species_lst[:]
+    del chroms[:]
+    sites.clear()
+    del positions[:]
+    del strands[:]
 
-        # print(bed_line)
-        bed_line[1] += 1
-        bed_line[2] += 1
-
+    # print(bed_line)
+    bed_line[1] += 1
+    bed_line[2] += 1
 
 
 def main():
