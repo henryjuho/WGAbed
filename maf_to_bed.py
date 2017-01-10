@@ -59,7 +59,11 @@ def create_bed_records(aln_block, spec, ref, score):
             bed_line_str.append(','.join(strands))
             bed_line_str.append(score)
 
-            print('\t'.join(bed_line_str))
+            # catch alignment blocks that start with - for ref species and don't print them
+            if pos == 1 and sites[ref] == '-':
+                pass
+            else:
+                print('\t'.join(bed_line_str))
 
             del bed_line_str[4:]
             del species_lst[:]
