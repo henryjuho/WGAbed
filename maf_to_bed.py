@@ -99,7 +99,7 @@ def create_bed_records(aln_block, spec, ref, score):
 
             else:
                 if ins_rel_ref is False:
-                    sites.append('?')
+                    sites[sp] += '?'
                     chroms.append('?')
                     strands.append('?')
                     positions.append('?')
