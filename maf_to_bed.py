@@ -98,8 +98,8 @@ def create_bed_records(aln_block, spec, ref, score):
                         positions.append(str(int(aln_block[sp][1]) + pos - gap_count[sp]))
 
             else:
+                sites[sp] += '?'
                 if ins_rel_ref is False:
-                    sites[sp] += '?'
                     chroms.append('?')
                     strands.append('?')
                     positions.append('?')
