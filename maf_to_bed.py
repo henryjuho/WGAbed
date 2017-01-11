@@ -49,7 +49,7 @@ def create_bed_records(aln_block, spec, ref, score):
     for pos in range(len(aln_block[ref][5])):
 
         # delayed printing
-        if pos != 0 and aln_block[ref][5][pos] != '-':
+        if pos != 0 and '-' not in [aln_block[x][5][pos] for x in aln_block.keys()]:
             bed_line_str = [str(s) for s in bed_line]
 
             bed_line_str.append(','.join(species_lst))
@@ -76,10 +76,10 @@ def create_bed_records(aln_block, spec, ref, score):
             bed_line[1] += 1
             bed_line[2] += 1
 
-        ins_rel_ref = False
-        if aln_block[ref][5][pos] == '-':
-                # gap_count[ref] += 1   # HB: used to keep ref coords correct after insertions relative to ref
-                ins_rel_ref = True  # allows base extraction and pos update without chr  and species etc being updated
+        indel = False
+        # catches indels and allows bases to be appended to previous site instead of constructing new bed line
+        if '-' in [aln_block[x][5][pos] for x in aln_block.keys()]:
+            indel = True
 
         for sp in spec:
             if sp not in species_lst:
@@ -89,21 +89,21 @@ def create_bed_records(aln_block, spec, ref, score):
             # start.append(aln_block[sp][1] + site_num)
             if sp in aln_block.keys():
                 sites[sp] += (aln_block[sp][5][pos])
-                if ins_rel_ref is False:
+                if indel is False:
                     chroms.append(aln_block[sp][0])
                     strands.append(aln_block[sp][3])
 
                 if aln_block[sp][5][pos] == '-':
                     gap_count[sp] += 1
-                    if ins_rel_ref is False:
+                    if indel is False:
                         positions.append('NA')
                 else:
-                    if ins_rel_ref is False:
+                    if indel is False:
                         positions.append(str(int(aln_block[sp][1]) + pos - gap_count[sp]))
 
             else:
                 sites[sp] += '?'
-                if ins_rel_ref is False:
+                if indel is False:
                     chroms.append('?')
                     strands.append('?')
                     positions.append('?')
