@@ -145,9 +145,6 @@ def main():
                         dest='ref_species',
                         required=True,
                         help="Name of reference species (as it appears in the MAF file")
-    parser.add_argument('-s', '--species_list',
-                        help="DEPRECIATED: Text file listing the species names of the species in the MAF file. "
-                             "This file determines in which order the species are in the BED file")
     parser.add_argument('-c', '--chromosome',
                         dest='ref_chrom',
                         required=True,
@@ -204,5 +201,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
