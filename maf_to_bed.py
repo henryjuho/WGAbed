@@ -2,6 +2,7 @@ from __future__ import print_function
 import sys
 import gzip
 import argparse
+import subprocess
 
 
 def complement(seq):
@@ -136,31 +137,36 @@ def main():
 
     parser = argparse.ArgumentParser(description="Convert a whole genome alignment in MAF format to BED format "
                                                  "following the coordinates of one of the species in the alignment ")
-    parser.add_argument('-i', '--infile', dest='infile', required=True, help="Whole genome alignment in MAF format "
-                                                                             "(Compressed)")
-    parser.add_argument('-r', '--ref_species', dest='ref_species', required=True, help="Name of reference "
-                                                                                       "species (as it appears "
-                                                                                       "in the MAF file")
-    parser.add_argument('-s', '--species_list', dest='species_list', required=True, help="Text file listing the "
-                                                                                         "species names of the "
-                                                                                         "species in the MAF file. This"
-                                                                                         " file determines in which "
-                                                                                         "order the species are in the "
-                                                                                         "BED file")
-    parser.add_argument('-c', '--chromosome', dest='ref_chrom', required=True, help="Specify which chromosome to"
-                                                                                           "extract. This script only "
-                                                                                           "extracts one to BED format "
-                                                                                           "one chromosome in each run")
+    parser.add_argument('-i', '--infile',
+                        dest='infile',
+                        required=True,
+                        help="Whole genome alignment in MAF format (Compressed)")
+    parser.add_argument('-r', '--ref_species',
+                        dest='ref_species',
+                        required=True,
+                        help="Name of reference species (as it appears in the MAF file")
+    parser.add_argument('-s', '--species_list',
+                        help="DEPRECIATED: Text file listing the species names of the species in the MAF file. "
+                             "This file determines in which order the species are in the BED file")
+    parser.add_argument('-c', '--chromosome',
+                        dest='ref_chrom',
+                        required=True,
+                        help="Specify which chromosome to extract. This script only extracts one to BED format one "
+                             "chromosome in each run")
 
     args = parser.parse_args()
 
     ref_species = args.ref_species
 
-    species_list = [i.rstrip() for i in open(args.species_list, 'r')]  # list of species to extract
+    # generate list of species in maf file, reference first, then alphabetical
+    spp_grep = "zgrep ^s " + args.infile + " | cut -d '.' -f 1 | cut -d ' ' -f 2 | less -S | sort -u"
+    species_list = subprocess.Popen(spp_grep, shell=True, stdout=subprocess.PIPE).communicate()[0].split('\n')[:-1]
+    species_list.remove(ref_species)
+    species_list = [ref_species] + sorted(species_list)
 
     ref_chrom = args.ref_chrom
 
-    with gzip.open(args.infile) as infile:
+    with gzip.open(args.infile, 'r') as infile:
         # align_block = {}
         for line in infile:
             if line.startswith('#'):
