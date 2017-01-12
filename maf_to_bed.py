@@ -37,6 +37,7 @@ def revpos(pos, seq_len, block_len):
 def create_bed_records(aln_block, spec, ref, score):
 
     bed_line = [aln_block[ref][0], int(aln_block[ref][1]), int(aln_block[ref][1]) + 1, aln_block[ref][3]]
+    # todo adjust end position to account for length of ref allele in del rel to ref
 
     species_lst = []
     chroms = []
@@ -45,12 +46,12 @@ def create_bed_records(aln_block, spec, ref, score):
     strands = []
 
     gap_count = {spc: 0 for spc in spec}  # dictionary for holding the count of '-' characters in alignment block
-
+    start_print = False
     # print(len(aln_block[ref][5]))
     for pos in range(len(aln_block[ref][5])):
 
         # delayed printing
-        if pos != 0 and '-' not in [aln_block[x][5][pos] for x in aln_block.keys()]:
+        if start_print is True and '-' not in [aln_block[x][5][pos] for x in aln_block.keys()]:
             bed_line_str = [str(s) for s in bed_line]
 
             bed_line_str.append(','.join(species_lst))
@@ -60,11 +61,7 @@ def create_bed_records(aln_block, spec, ref, score):
             bed_line_str.append(','.join(strands))
             bed_line_str.append(score)
 
-            # catch alignment blocks that start with - for ref species and don't print them
-            if pos == 1 and sites[ref] == '-':
-                pass
-            else:
-                print('\t'.join(bed_line_str))
+            print('\t'.join(bed_line_str))
 
             del bed_line_str[4:]
             del species_lst[:]
@@ -81,6 +78,17 @@ def create_bed_records(aln_block, spec, ref, score):
         # catches indels and allows bases to be appended to previous site instead of constructing new bed line
         if '-' in [aln_block[x][5][pos] for x in aln_block.keys()]:
             indel = True
+
+        # suppress print for indels that occur at start of block, due to inability to assign genomic start positions
+        if indel is False:
+            start_print = True
+        if start_print is False:
+            # updates gap count prior to skipping site
+            for sp in spec:
+                if sp in aln_block.keys():
+                    if aln_block[sp][5][pos] == '-':
+                            gap_count[sp] += 1
+            continue
 
         for sp in spec:
             if sp not in species_lst:
