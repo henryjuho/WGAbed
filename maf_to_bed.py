@@ -37,7 +37,7 @@ def revpos(pos, seq_len, block_len):
 def create_bed_records(aln_block, spec, ref, score):
 
     bed_line = [aln_block[ref][0], int(aln_block[ref][1]), int(aln_block[ref][1]) + 1, aln_block[ref][3]]
-    # todo adjust end position to account for length of ref allele in del rel to ref
+    ref_start = int(aln_block[ref][1])
 
     species_lst = []
     chroms = []
@@ -52,7 +52,8 @@ def create_bed_records(aln_block, spec, ref, score):
 
         # delayed printing
         if start_print is True and '-' not in [aln_block[x][5][pos] for x in aln_block.keys()]:
-            bed_line_str = [str(s) for s in bed_line]
+            ref_end = ref_start + (len(sites[ref]) - sites[ref].count('-'))
+            bed_line_str = [str(s) for s in [bed_line[0], ref_start, ref_end, bed_line[3]]]
 
             bed_line_str.append(','.join(species_lst))
             bed_line_str.append(','.join(chroms))
@@ -109,6 +110,8 @@ def create_bed_records(aln_block, spec, ref, score):
                 else:
                     if indel is False:
                         positions.append(str(int(aln_block[sp][1]) + pos - gap_count[sp]))
+                        if sp == ref:
+                            ref_start = int(aln_block[sp][1]) + pos - gap_count[sp]
 
             else:
                 sites[sp] += '?'
@@ -118,27 +121,26 @@ def create_bed_records(aln_block, spec, ref, score):
                     positions.append('?')
 
     # print final record in block
-    bed_line_str = [str(s) for s in bed_line]
+    if start_print is True:  # deals with instances where whole block is an indel
+        ref_end = ref_start + (len(sites[ref]) - sites[ref].count('-'))
 
-    bed_line_str.append(','.join(species_lst))
-    bed_line_str.append(','.join(chroms))
-    bed_line_str.append(','.join(positions))
-    bed_line_str.append(','.join([sites[si] for si in species_lst]))
-    bed_line_str.append(','.join(strands))
-    bed_line_str.append(score)
+        bed_line_str = [str(s) for s in [bed_line[0], ref_start, ref_end, bed_line[3]]]
 
-    print('\t'.join(bed_line_str))
+        bed_line_str.append(','.join(species_lst))
+        bed_line_str.append(','.join(chroms))
+        bed_line_str.append(','.join(positions))
+        bed_line_str.append(','.join([sites[si] for si in species_lst]))
+        bed_line_str.append(','.join(strands))
+        bed_line_str.append(score)
 
-    del bed_line_str[4:]
-    del species_lst[:]
-    del chroms[:]
-    sites.clear()
-    del positions[:]
-    del strands[:]
+        print('\t'.join(bed_line_str))
 
-    # print(bed_line)
-    bed_line[1] += 1
-    bed_line[2] += 1
+        del bed_line_str[4:]
+        del species_lst[:]
+        del chroms[:]
+        sites.clear()
+        del positions[:]
+        del strands[:]
 
 
 def main():
