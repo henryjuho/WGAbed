@@ -2,7 +2,7 @@
 
 ##Example usage
 
-    $ python maf_to_bed.py -i data/test.maf.gz -r Greattit -s data/species.txt -c chr8 | sort -k1,1 -k2,2n | gzip -c > data/test.wga.bed.gz
+    $ ./maf_to_bed.py -i data/test.maf.gz -r Greattit -s data/species.txt -c chr8 | sort -k1,1 -k2,2n | gzip -c > data/test.wga.bed.gz
 
 
 
