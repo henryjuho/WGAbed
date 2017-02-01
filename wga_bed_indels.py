@@ -18,15 +18,11 @@ def unique_to_ref(sequences):
 
     # check for seq conservation in outgroup
     for spp in outgroups:
-        if '-' in spp and '-' not in outgroups[0]:
-            return False
-        elif '-' not in spp and '-' in outgroups[0]:
+        if spp.count('-') != outgroups[0].count('-'):
             return False
 
     # check ref not same as outgroups
-    if '-' in ref and '-' in outgroups[0]:
-        return False
-    elif '-' not in ref and '-' not in outgroups[0]:
+    if ref.count('-') == outgroups[0].count('-'):
         return False
     else:
         return True
