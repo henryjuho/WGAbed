@@ -6,6 +6,13 @@ import sys
 
 
 def species_in_block(positon_column):
+
+    """
+    takes the coordinates column of wga.bed and returns number of spp covered
+    :param positon_column: list
+    :return: int
+    """
+
     no_spp_align = len(positon_column)
     spp_missing = positon_column.count('?')
     spp_in_block = no_spp_align - spp_missing
@@ -13,6 +20,13 @@ def species_in_block(positon_column):
 
 
 def unique_to_ref(sequences):
+
+    """
+    takes the sequence column of a wga.bed and returns true if INDEL is reference specific
+    :param sequences: list
+    :return: bool
+    """
+
     ref = sequences[0]
     outgroups = sequences[1:]
 
