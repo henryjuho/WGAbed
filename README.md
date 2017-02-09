@@ -64,3 +64,40 @@ chr8	4090314	4090315	+	Zebrafinch,Chicken,Flycatcher,Greattit	chr8,chr8,chr8,chr
 chr8	4090374	4090375	+	Zebrafinch,Chicken,Flycatcher,Greattit	chr8,chr8,chr8,chr8	4090374,27030423,6147222,30876831	G--,CCA,GAA,GTA	+,-,-,+	170727.0
 chr8	4090379	4090380	+	Zebrafinch,Chicken,Flycatcher,Greattit	chr8,chr8,chr8,chr8	4090379,27030430,6147229,30876838	G-------,GTGCTAAT,GTGTTAAT,GTGTTAAT	+,-,-,+	170727.0
 ```
+
+##non_ref_intersect.py
+
+This script takes a piped wga.bed file and extracts a subset of INDELs specified by an associated bed file with coordinates from a non-reference species in the alignment.
+ 
+###Usage
+
+```
+$ ./non_ref_intersect.py -h
+usage: non_ref_intersect.py [-h] -b BED_NON_REF -q QUERY_SPECIES -c CHROMOSOME
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -b BED_NON_REF, --bed_non_ref BED_NON_REF
+                        .bed file with non refernce spp coordinates to
+                        intersect with wga.bed file
+  -q QUERY_SPECIES, --query_species QUERY_SPECIES
+                        species that the query bed file has coordinates for
+  -c CHROMOSOME, --chromosome CHROMOSOME
+                        target chromosome
+
+```
+
+###Example and output
+
+```
+$ cat data/test_indel_data.bed | ./non_ref_intersect.py -b data/test_query.bed.gz -q Flycatcher -c chr8
+```
+
+```
+chr8    30876342        30876343        +       Greattit,Chicken,Flycatcher,Zebrafinch  chr8,chr8,chr8,chr8     30876342,27029971,6146725,4089858       A,a,A,A +,-,-,+ 170727.0
+chr8    30876343        30876344        +       Greattit,Chicken,Flycatcher,Zebrafinch  chr8,chr8,chr8,chr8     30876343,27029972,6146726,4089859       A,a,A,A +,-,-,+ 170727.0
+chr8    30876344        30876345        +       Greattit,Chicken,Flycatcher,Zebrafinch  chr8,chr8,chr8,chr8     30876344,27029973,6146727,4089860       A,t,A,A +,-,-,+ 170727.0
+chr8    30876345        30876346        +       Greattit,Chicken,Flycatcher,Zebrafinch  chr8,chr8,chr8,chr8     30876345,27029974,6146728,4089861       A,a,A,A +,-,-,+ 170727.0
+chr8    30876346        30876347        +       Greattit,Chicken,Flycatcher,Zebrafinch  chr8,chr8,chr8,chr8     30876346,27029975,6146729,4089862       T,t,T,T +,-,-,+ 170727.0
+
+```
