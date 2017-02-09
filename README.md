@@ -67,7 +67,7 @@ chr8	4090379	4090380	+	Zebrafinch,Chicken,Flycatcher,Greattit	chr8,chr8,chr8,chr
 
 ##non_ref_intersect.py
 
-This script takes a piped wga.bed file and extracts a subset of INDELs specified by an associated bed file with coordinates from a non-reference species in the alignment.
+This script takes a piped wga.bed file and extracts a subset of sets specified by an associated bed file with coordinates from a non-reference species in the alignment. NOTE output is still written as a reference ordered bed.
  
 ###Usage
 
