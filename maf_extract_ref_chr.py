@@ -30,7 +30,7 @@ def main():
         # process header
         if line.startswith('#'):
             if header is True:
-                print(line)
+                print(line.replace('\n', ''))
             else:
                 continue
 
