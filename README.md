@@ -1,15 +1,15 @@
 # Conversion of whole genome alignment file in MAF format to a reference ordered BED format 
 
-##Example usage
+## Example usage
 
     $ ./maf_to_bed.py -i data/test.maf.gz -r Greattit -s data/species.txt -c chr8 | sort -k1,1 -k2,2n | gzip -c > data/test.wga.bed.gz
 
 
 
-#Output format
+# Output format
 
 
-##chr    start	end	strand	outgroups	outgroup_chr positions  alleles strands score
+## chr    start	end	strand	outgroups	outgroup_chr positions  alleles strands score
 	
 - **chr** is the chromosome in the reference species genome
 - **start** 0-based start position on the chromosome for the site in the reference species genome
@@ -24,17 +24,17 @@ present within a MAF block and '-' for INDELS in the alignment.
 - **score** for the MAF alignment block
 
 
-##Example aligned site in the BED format
+## Example aligned site in the BED format
 ```
 chr8    30876827        30876828        +       Greattit,Chicken,Zebrafinch,Flycatcher  chr8,chr8,chr8,chr8    30876827,27030444,4090372,6147243       T,T,T,T +,-,+,- 170727.0
 ```
 
-#Utility scripts
-##wga_bed_indels.py
+# Utility scripts
+## wga_bed_indels.py
 
 This script takes the piped output of ```maf_to_bed.py``` and extracts the INDELs. It is possible to specify a number of filtering options, see usage below.
  
-###Usage
+### Usage
 
 ```
 $ ./wga_bed_indels.py -h
@@ -51,7 +51,7 @@ optional arguments:
                         species, and conserved in non reference species
 ```
 
-###Example and output
+### Example and output
 
 ```
 $ ./maf_to_bed.py -i data/test.maf.gz -r Zebrafinch -c chr8 | sort -k1,1 -k2,2n | ./wga_bed_indels.py -min_coverage 4 -max_length 10 -ref_specific 
@@ -65,11 +65,11 @@ chr8	4090374	4090375	+	Zebrafinch,Chicken,Flycatcher,Greattit	chr8,chr8,chr8,chr
 chr8	4090379	4090380	+	Zebrafinch,Chicken,Flycatcher,Greattit	chr8,chr8,chr8,chr8	4090379,27030430,6147229,30876838	G-------,GTGCTAAT,GTGTTAAT,GTGTTAAT	+,-,-,+	170727.0
 ```
 
-##non_ref_intersect.py
+## non_ref_intersect.py
 
 This script takes a piped wga.bed file and extracts a subset of sets specified by an associated bed file with coordinates from a non-reference species in the alignment. NOTE output is still written as a reference ordered bed.
  
-###Usage
+### Usage
 
 ```
 $ ./non_ref_intersect.py -h
@@ -87,7 +87,7 @@ optional arguments:
 
 ```
 
-###Example and output
+### Example and output
 
 ```
 $ cat data/test_indel_data.bed | ./non_ref_intersect.py -b data/test_query.bed.gz -q Flycatcher -c chr8
@@ -100,4 +100,33 @@ chr8    30876344        30876345        +       Greattit,Chicken,Flycatcher,Zebr
 chr8    30876345        30876346        +       Greattit,Chicken,Flycatcher,Zebrafinch  chr8,chr8,chr8,chr8     30876345,27029974,6146728,4089861       A,a,A,A +,-,-,+ 170727.0
 chr8    30876346        30876347        +       Greattit,Chicken,Flycatcher,Zebrafinch  chr8,chr8,chr8,chr8     30876346,27029975,6146729,4089862       T,t,T,T +,-,-,+ 170727.0
 
+```
+## maf_extract_ref_chr.py
+
+This script extracts all blocks containing a given reference chromosome.
+
+### Usage
+
+```
+$ ./maf_extract_ref_chr.py -h
+usage: maf_extract_ref_chr.py [-h] -c CHROMOSOME [-H]
+
+Extract a reference chromosome from a WGA MAF file
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CHROMOSOME, --chromosome CHROMOSOME
+                        Specify which chromosome to extract
+  -H, --header          If specified will print header in output
+```
+
+### Example and output
+
+```
+$ zgrep -v ^6 data/test.maf.gz | ./maf_extract_ref_chr.py -c chr8
+a score=170727.0
+s Chicken.chr8     2932491 551 + 29963013 CAATGGAATTTAGTAGATAAGACTCAGAATCAGATTCTGGGTTTCAAAGTTGAATG-----CAAGGAAGGAAAAAATCCCCACAAGTATATTAGCACAATGTGGTATAAATCCATCATCTATAATGTACTGGATTGCTTTTAACTCTCAGTCTGAAACCAAATCGATTTCAACAGTTGGTGCTGGACAGAGAACAATTACTAACCTTCTTTTTTCTCTTTCCTGCTGCTTAACAGGGCTACAAATAACAACAGAAAATTACTCTCAAAGATCTACCCATGT-------------GAAACCAAAGTAACTTAAATGTTCAAATATTATTTGGATTGCAATGTGTAATGTCTCTCAAAT----AGACAAGAAAAATATGGGCAA-------------------AATA-GTCTATAGTCAGTTTAAGAGTCCCTTCTACATTTGCAATCATGTAAAATGAT---TTAGGTATCAATTTCAAAAC--GTTCAAATACAGGAAAGAAAGTTCCTCAGT------------------------AT-TATTAACATATTGTAGAACATTCGCCATCATCCTGGCATTTCAAAACG---TTAAGTTTAATGAGCTAGCCAAGTAGttatatatt
+s Zebrafinch.chr8 23902959 610 - 27993427 CACTGGGAGATGCTGAAAGAGCCCCGGGATGGGAGTGTGGGGT-TAAAGCTGAGTGTGACACAGGGCAGGCCACGAGCCCCTGAGTCCC-------CAGTG--CCACAGATCCAGC-CCTGCAATGCCCTGCCTGCCTTTCACCTCCCAGCCTGCAGCCAAACC-GTGTCAACACTTTGTGCTGGACACAGACCAATTACTAATCTTCTTTCTCTTCTTTCCTGCTGCTTAACAGGCCTACAAATAATGCTTTAAAATTA--CTCTGAGACCTACCCACATAACTTTCAGAGCAGAAACCAAAGTAACTTAAATTATCAAAAATCATTTCTATTTCAAGGTGAAATGTCTTTGAAATACACAGAAAATAAAAATCCTGGTTAAAATTAATCCAGAAATACTAATG-TATTGAGGTCACTGCAAGGATCCTATCTGGATTTG-AATCACGTAAAAGAATCAATTAAGAGTCAAATTTAAAAGAAATTCAAAAACAGGAAAGATAATTTCTCAGTAGGTATTCAAAAGAATTCATACAAATGTATTTAGGTGTTGCAGAACACTTACCATCACTCTAGCACTACCAAACAACTATAAATCTATTTAACTAACCTGTTAAGTGGATTTT
+s Flycatcher.chr8 25953491 600 + 32100816 CACTGGAAAACGCTAAAAAAGGCTCAGGATGGGGCCATGGGGG-TGGAGCTGAGTGCCAAGCAGGGCAGGTGAGGAGCCCCTGGCGTCCATTAACACAATGTTCCACAGATCCATC-CCTGTAATGCACTGCCTGCCTTTTACCTCGCAGCCTGAAGCCAAATCAATTTCAACAGTTTGTGCTGGACACAGACCAATTACTaatcttctttctcctctttcctgctgcttAACAGGGCTACAAATAATGGTTTAAAATTACTCTCTGAGACCTACCCACATGACTTTCAGAGCAGAAACCAAAGTAACTTGAATGATCAAAAATCGTTTATACTTCAAGGTGAAATGTCtttgaaattcacagaaaagaaaaatcctggctaaaataaatccagaaataCCAACGTTTTTGTGGTGTCTGCAAGGATCCTATCTGGATTTGCAATCATGTGAAAGAATCAAATAGGagtcaaatttaaaataaattcaaaaacaGGAAAGGGAACTTCTCAGT------------------------ATGTATTCAGGTGTTGCAGAACACTTACCATCATTCTATCACTGCCAAACAACTGTAAATCTATTTAACCAAACAATTGAGTGGATTTT
+s Greattit.chr8     447231 593 - 31324166 CACTGGAATATGCTAAAAAAGAATCAGGATGGGACCATGGGGGTTAAAGGTGAGTGTGATACAGGGAAGATGAAGAGCCCCTGGTGTCGATTAACACAATGTACCATAGATCCATC-GCTCTAATGCATTGTCTGGCTTTTACCTCGCAGCCTGAAGCCAAATCAATTTCAACAGTTTGTGCTGGACAGACACCAATTACAAA-------TTACCTCTTTCCTGCTGCTTAACAGGGCTACAAAAAATGGTTTAAAATTACTCTCTAAGACCTACCCACATGACTTTTAGAGCAGAAACCAACGTAACTTAAATGATCAAAAACTGTTTCTATTTCAAGGTGAAATGTCTTGGAAATTCATGGAAAAGAAAAATCCATGCTAAAATTAATCCAGAAATAGAAATG-TTTTCTGGTCACTGTAAGGAACTTAACTGGATTTGCAATCATAAAAAAGAATCAATTAGGAGTCAAATTTAAAATAAATTTAAAAATAGGAAAAGGAACTTCTCAGT------------------------ATGTATTCAGGTATTGCAGAACACTTAACATCATTCTGGCACTGCCAAACAACTATACGTCTATTTAACTAACTAACTAAGTGGATTTT
 ```
