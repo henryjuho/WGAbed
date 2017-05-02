@@ -19,7 +19,7 @@
 (order as in the species listed in outgroups column)
 - **positions** are the 0-based positions for the outgroups species. A '?' is used when a non-reference species is not 
 present within a MAF block and '-' for INDELS in the alignment.
-- **alleles** are the nucleotides for the outgroup species alignment at that position in there genome. A '?' is used when a non-reference species is not present within a MAF block
+- **alleles** are the nucleotides for the outgroup species alignment at that position in their genome. A '?' is used when a non-reference species is not present within a MAF block
 - **strands** are the strands for the nucleotides listed in alleles column
 - **score** for the MAF alignment block
 
