@@ -10,7 +10,7 @@ def main():
         is_masked = set([x.islower() for x in seqs])
 
         if len(is_masked) == 1 and True in is_masked:
-            print(line)
+            print(line.rstrip('\n'))
 
 if __name__ == '__main__':
     main()
