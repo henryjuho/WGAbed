@@ -1,18 +1,29 @@
-# Conversion of whole genome alignment file in MAF format to a reference ordered BED format 
+# WGAbed - a package for handling whole genome alignments
 
-## Example usage
+This packages handles the conversion of a whole genome alignment file in MAF format to a reference ordered BED format containing all the information in the MAF file but in a more accessible format. This respository contains scripts for creating a 'whole genome alignment BED' or 'WGAbed' file as well as scripts for downstream manipulation of the file.
 
-    $ ./maf_to_bed.py -i data/test.maf.gz -r Greattit -s data/species.txt -c chr8 | sort -k1,1 -k2,2n | gzip -c > data/test.wga.bed.gz
+## Creating the whole genome alignement bed file
 
+A WGAbed file can be created from a MAF file with the script ```maf_to_bed.py```. Script must be passed the species which you would like the BED coordinates to follow with the ```-r``` flag. Additionally the chromosome must be specified with ```-c```. The output can then be piped to sort and bgzip to produced a sorted, indexable WGAbed file:
 
+```
+$ ./maf_to_bed.py -i data/test.maf.gz -r Greattit -s data/species.txt -c chr8 | sort -k1,1 -k2,2n | bgzip -c > data/test.wga.bed.gz
+```
 
-# Output format
+This file can then be indexed with tabix:
+
+```
+$ tabix -pbed data/test.wga.bed.gz
+```
+
+## WGAbed format
 
 
 ## chr    start	end	strand	outgroups	outgroup_chr positions  alleles strands score
 	
 - **chr** is the chromosome in the reference species genome
 - **start** 0-based start position on the chromosome for the site in the reference species genome
+- **strand** the strand for the reference species sequence
 - **end** end position (end of range) in the reference species genome
 - **outgroups** are comma delimited list of outgroup species (Order determined based on species list input file)
 - **outgroup_chr** are a comma delimited list of outroups species chromosomes for the aligned position 
