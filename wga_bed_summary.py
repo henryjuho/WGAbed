@@ -24,6 +24,24 @@ def out_group_agreement(sites):
         return False
 
 
+def out_group_len_agreement(sites):
+
+    """
+    returns true if outgroups lengths agree
+    :param sites: list(str, ...)
+    :return: bool
+    """
+
+    out_groups = sites[1:]
+    out_lens = [len(x) for x in out_groups]
+
+    if len(set(out_lens)) == 1:
+        return True
+
+    else:
+        return False
+
+
 def main():
 
     # args
@@ -51,7 +69,7 @@ def main():
                 continue
 
             # ref specific?
-            if out_group_agreement(sites) is False:
+            if out_group_len_agreement(sites) is False:
                 continue
 
         out_dict[chromo] += 1
