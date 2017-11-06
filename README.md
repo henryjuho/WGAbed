@@ -141,3 +141,59 @@ s Zebrafinch.chr8 23902959 610 - 27993427 CACTGGGAGATGCTGAAAGAGCCCCGGGATGGGAGTGT
 s Flycatcher.chr8 25953491 600 + 32100816 CACTGGAAAACGCTAAAAAAGGCTCAGGATGGGGCCATGGGGG-TGGAGCTGAGTGCCAAGCAGGGCAGGTGAGGAGCCCCTGGCGTCCATTAACACAATGTTCCACAGATCCATC-CCTGTAATGCACTGCCTGCCTTTTACCTCGCAGCCTGAAGCCAAATCAATTTCAACAGTTTGTGCTGGACACAGACCAATTACTaatcttctttctcctctttcctgctgcttAACAGGGCTACAAATAATGGTTTAAAATTACTCTCTGAGACCTACCCACATGACTTTCAGAGCAGAAACCAAAGTAACTTGAATGATCAAAAATCGTTTATACTTCAAGGTGAAATGTCtttgaaattcacagaaaagaaaaatcctggctaaaataaatccagaaataCCAACGTTTTTGTGGTGTCTGCAAGGATCCTATCTGGATTTGCAATCATGTGAAAGAATCAAATAGGagtcaaatttaaaataaattcaaaaacaGGAAAGGGAACTTCTCAGT------------------------ATGTATTCAGGTGTTGCAGAACACTTACCATCATTCTATCACTGCCAAACAACTGTAAATCTATTTAACCAAACAATTGAGTGGATTTT
 s Greattit.chr8     447231 593 - 31324166 CACTGGAATATGCTAAAAAAGAATCAGGATGGGACCATGGGGGTTAAAGGTGAGTGTGATACAGGGAAGATGAAGAGCCCCTGGTGTCGATTAACACAATGTACCATAGATCCATC-GCTCTAATGCATTGTCTGGCTTTTACCTCGCAGCCTGAAGCCAAATCAATTTCAACAGTTTGTGCTGGACAGACACCAATTACAAA-------TTACCTCTTTCCTGCTGCTTAACAGGGCTACAAAAAATGGTTTAAAATTACTCTCTAAGACCTACCCACATGACTTTTAGAGCAGAAACCAACGTAACTTAAATGATCAAAAACTGTTTCTATTTCAAGGTGAAATGTCTTGGAAATTCATGGAAAAGAAAAATCCATGCTAAAATTAATCCAGAAATAGAAATG-TTTTCTGGTCACTGTAAGGAACTTAACTGGATTTGCAATCATAAAAAAGAATCAATTAGGAGTCAAATTTAAAATAAATTTAAAAATAGGAAAAGGAACTTCTCAGT------------------------ATGTATTCAGGTATTGCAGAACACTTAACATCATTCTGGCACTGCCAAACAACTATACGTCTATTTAACTAACTAACTAAGTGGATTTT
 ```
+
+## polarise_wga_ref_indels.py
+
+This script returns off wga bed lines that contain the specified INDEL type.
+
+### Usage
+
+```
+$ ./polarise_wga_ref_indels.py -h
+usage: polarise_wga_ref_indels.py [-h] -indel_type
+                                  {non_indel,ambig_indel,deletion,insertion}
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -indel_type {non_indel,ambig_indel,deletion,insertion}
+                        type of indel to output
+```
+
+### Example and output
+
+To extract all ref specific insertions:
+
+```
+$ ./maf_to_bed.py -i data/test.maf.gz -r Zebrafinch -c chr8 | sort -k1,1 -k2,2n | ./polarise_wga_ref_indels.py -indel_type insertion
+chr8    4089946 4089971 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4089946,27030055,6146813,30876430       TTTGTATGAATTCTTTTGAATACCT,T------------------------,T------------------------,T------------------------   +,-,-,+ 170727.0
+```
+
+To extract all ref specific deletions:
+
+```
+$ ./maf_to_bed.py -i data/test.maf.gz -r Zebrafinch -c chr8 | sort -k1,1 -k2,2n | ./polarise_wga_ref_indels.py -indel_type deletion
+chr8    4090041 4090042 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4090041,27030121,6146884,30876501       T-,TG,TG,TG     +,-,-,+ 170727.0
+chr8    4090219 4090220 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4090219,27030264,6147064,30876680       G--,GAG,GAG,GAG +,-,-,+ 170727.0
+chr8    4090314 4090315 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4090314,27030361,6147161,30876770       C-,TC,TT,TT     +,-,-,+ 170727.0
+chr8    4090374 4090375 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4090374,27030423,6147222,30876831       G--,CCA,GAA,GTA +,-,-,+ 170727.0
+chr8    4090379 4090380 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4090379,27030430,6147229,30876838       G-------,GTGCTAAT,GTGTTAAT,GTGTTAAT       +,-,-,+ 170727.0
+```
+
+To extract all ambiguous INDELs:
+
+```
+$ ./maf_to_bed.py -i data/test.maf.gz -r Zebrafinch -c chr8 | sort -k1,1 -k2,2n | ./polarise_wga_ref_indels.py -indel_type ambig_indel
+chr8    4089892 4089896 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4089892,27030005,6146759,30876376       TAGT,A---,CAGT,TAGT     +,-,-,+ 170727.0
+chr8    4089943 4089945 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4089943,27030053,6146810,30876427       AC,A-,AC,AC     +,-,-,+ 170727.0
+chr8    4090000 4090003 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4090000,27030085,6146843,30876460       TTT,C--,ttt,TTT +,-,-,+ 170727.0
+chr8    4090022 4090026 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4090022,27030105,6146865,30876482       ATTG,A---,TTTG,ATTG     +,-,-,+ 170727.0
+chr8    4090076 4090077 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4090076,27030157,6146920,30876537       A-,C-,AA,A-     +,-,-,+ 170727.0
+chr8    4090080 4090100 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4090080,27030161,6146925,30876541       TAGTATTTCTGGATTAATTT,T-------------------,TGGtatttctggatttattt,TTCTATTTCTGGATTAATTT       +,-,-,+ 170727.0
+chr8    4090120 4090125 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4090120,27030182,6146965,30876581       TGTGT,T----,tgtga,CATGA +,-,-,+ 170727.0
+chr8    4090187 4090201 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4090187,27030245,6147032,30876648       CTGCTCTGAAAGTT,C-------------,CTGCTCTGAAAGTC,CTGCTCTAAAAGTC       +,-,-,+ 170727.0
+chr8    4090269 4090277 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4090269,27030316,6147116,30876732       AAAGAAGA,AAAGAAGG,aaagaaga,A-------       +,-,-,+ 170727.0
+chr8    4090361 4090362 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4090361,27030409,6147209,30876818       G-,AT,G-,C-     +,-,-,+ 170727.0
+chr8    4090407 4090413 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4090407,27030465,6147264,30876873       GTGTCA,G-----,GCTTGG,GTATCA     +,-,-,+   170727.0
+chr8    4090424 4090425 +       Zebrafinch,Chicken,Flycatcher,Greattit  chr8,chr8,chr8,chr8     4090424,27030477,6147281,30876890       A-,GA,A-,AA     +,-,-,+ 170727.0
+```
+
