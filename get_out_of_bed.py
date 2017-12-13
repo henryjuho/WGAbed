@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import argparse
 import pysam
 
@@ -109,8 +110,8 @@ def main():
     parser = argparse.ArgumentParser(description='Utility to convert subregions of an whole genome alignment '
                                                  'bed file into different formats, eg) fasta')
     parser.add_argument('-wb', '--wga_bed', help='Whole genome alignment bedfile', required=True)
-    parser.add_argument('-q', '--query', help='Extraction coordinates in from chr:start-end', required=True)
-    parser.add_argument('-f', '--format', help='Format to output', required=True, choices=['fasta'])
+    parser.add_argument('-q', '--query', help='Extraction coordinates in form chr:start-end', required=True)
+    parser.add_argument('-f', '--format', help='Format to output', required=True, choices=['fasta', 'phylip'])
     args = parser.parse_args()
 
     # variables
@@ -123,9 +124,15 @@ def main():
 
     if out_format == 'fasta':
         for i in range(0, len(extracted_data[0])):
-            print '>' + extracted_data[0][i]
-            print extracted_data[1][i]
-
+            print('>' + extracted_data[0][i])
+            for q in range(0, len(extracted_data[1][i]), 60):
+                print(extracted_data[1][i][q: q+60])
+    if out_format == 'phylip':
+        print('\t{}\t{}'.format(len(extracted_data[0]), len(extracted_data[1][0])))
+        for i in range(0, len(extracted_data[0])):
+            print(extracted_data[0][i])
+            for q in range(0, len(extracted_data[1][i]), 60):
+                print(extracted_data[1][i][q: q+60])
 
 if __name__ == '__main__':
     main()
