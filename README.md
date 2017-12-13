@@ -2,7 +2,7 @@
 
 This packages handles the conversion of a whole genome alignment file in MAF format to a reference ordered BED format containing all the information in the MAF file but in a more accessible format. This respository contains scripts for creating a 'whole genome alignment BED' or 'WGAbed' file as well as scripts for downstream manipulation of the file.
 
-## Creating the whole genome alignement bed file
+## Creating the whole genome alignment bed file
 
 A WGAbed file can be created from a MAF file with the script ```maf_to_bed.py```. Script must be passed the species which you would like the BED coordinates to follow with the ```-r``` flag. Additionally the chromosome must be specified with ```-c```. The output can then be piped to sort and bgzip to produced a sorted, indexable WGAbed file:
 
