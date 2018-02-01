@@ -1,44 +1,59 @@
-# WGAbed - a package for handling whole genome alignments
+# WGAbed
+## A package for handling whole genome alignments
 
-This packages handles the conversion of a whole genome alignment file in MAF format to a reference ordered BED format containing all the information in the MAF file but in a more accessible format. This respository contains scripts for creating a 'whole genome alignment BED' or 'WGAbed' file as well as scripts for downstream manipulation of the file.
+WGAbed is a package that converts of a whole genome alignment file in MAF format to a reference ordered BED format containing all the information in the MAF file but in a more accessible way. The package contains a main script, ```maf_to_bed.py```, which takes care of the file conversion, along with a number of utility scripts for manipulating the resulting ```.wga.bed``` file.
 
-## Creating the whole genome alignment bed file
+## Getting started 
 
-A WGAbed file can be created from a MAF file with the script ```maf_to_bed.py```. Script must be passed the species which you would like the BED coordinates to follow with the ```-r``` flag. Additionally the chromosome must be specified with ```-c```. The output can then be piped to sort and bgzip to produced a sorted, indexable WGAbed file:
+### Generating a WGAbed file
+
+You can generate a ```wga.bed``` file from a ```.maf``` file as follows:
 
 ```
-$ ./maf_to_bed.py -i data/test.maf.gz -r Greattit -s data/species.txt -c chr8 | sort -k1,1 -k2,2n | bgzip -c > data/test.wga.bed.gz
+$ ./maf_to_bed.py -i data/test.maf.gz -r Greattit -c chr8 | sort -k1,1 -k2,2n | bgzip -c > data/test.wga.bed.gz
 ```
+Note, you need to specifiy a reference species from those contained in the ```.maf``` file and a chromosome to run on. 
 
-This file can then be indexed with tabix:
+In this example we then pipe the output to ```sort``` to sort by chromosome and then position, before piping the output to ```bgzip``` allowing us to index the file with ```tabix```.
 
 ```
 $ tabix -pbed data/test.wga.bed.gz
 ```
 
-## WGAbed format
+### The WGAbed format
 
+The top of our example file ```data/test.wga.bed.gz``` looks like this:
 
-## chr    start	end	strand	outgroups	outgroup_chr positions  alleles strands score
-	
-- **chr** is the chromosome in the reference species genome
-- **start** 0-based start position on the chromosome for the site in the reference species genome
-- **strand** the strand for the reference species sequence
-- **end** end position (end of range) in the reference species genome
-- **outgroups** are comma delimited list of outgroup species (Order determined based on species list input file)
-- **outgroup_chr** are a comma delimited list of outroups species chromosomes for the aligned position 
-(order as in the species listed in outgroups column)
-- **positions** are the 0-based positions for the outgroups species. A '?' is used when a non-reference species is not 
-present within a MAF block and '-' for INDELS in the alignment.
-- **alleles** are the nucleotides for the outgroup species alignment at that position in their genome. A '?' is used when a non-reference species is not present within a MAF block
-- **strands** are the strands for the nucleotides listed in alleles column
-- **score** for the MAF alignment block
-
-
-## Example aligned site in the BED format
 ```
-chr8    30876827        30876828        +       Greattit,Chicken,Zebrafinch,Flycatcher  chr8,chr8,chr8,chr8    30876827,27030444,4090372,6147243       T,T,T,T +,-,+,- 170727.0
+$ zcat data/test.wga.bed.gz | head
+chr8	30876342	30876343	+	Greattit,Chicken,Zebrafinch,Flycatcher	chr8,chr8,chr8,chr8	30876342,27029971,4089858,6146725	A,a,A,A	+,-,+,-	170727.0
+chr8	30876343	30876344	+	Greattit,Chicken,Zebrafinch,Flycatcher	chr8,chr8,chr8,chr8	30876343,27029972,4089859,6146726	A,a,A,A	+,-,+,-	170727.0
+chr8	30876344	30876345	+	Greattit,Chicken,Zebrafinch,Flycatcher	chr8,chr8,chr8,chr8	30876344,27029973,4089860,6146727	A,t,A,A	+,-,+,-	170727.0
+chr8	30876345	30876346	+	Greattit,Chicken,Zebrafinch,Flycatcher	chr8,chr8,chr8,chr8	30876345,27029974,4089861,6146728	A,a,A,A	+,-,+,-	170727.0
+chr8	30876346	30876347	+	Greattit,Chicken,Zebrafinch,Flycatcher	chr8,chr8,chr8,chr8	30876346,27029975,4089862,6146729	T,t,T,T	+,-,+,-	170727.0
+chr8	30876347	30876348	+	Greattit,Chicken,Zebrafinch,Flycatcher	chr8,chr8,chr8,chr8	30876347,27029976,4089863,6146730	C,a,C,C	+,-,+,-	170727.0
+chr8	30876348	30876349	+	Greattit,Chicken,Zebrafinch,Flycatcher	chr8,chr8,chr8,chr8	30876348,27029977,4089864,6146731	C,t,C,C	+,-,+,-	170727.0
+chr8	30876349	30876350	+	Greattit,Chicken,Zebrafinch,Flycatcher	chr8,chr8,chr8,chr8	30876349,27029978,4089865,6146732	A,a,A,A	+,-,+,-	170727.0
+chr8	30876350	30876351	+	Greattit,Chicken,Zebrafinch,Flycatcher	chr8,chr8,chr8,chr8	30876350,27029979,4089866,6146733	C,a,C,C	+,-,+,-	170727.0
+chr8	30876351	30876352	+	Greattit,Chicken,Zebrafinch,Flycatcher	chr8,chr8,chr8,chr8	30876351,27029980,4089867,6146734	T,C,T,T	+,-,+,-	170727.0
+
 ```
+
+The first four columns are as in a conventional BED file, and are followed by the additional columns containing the alignment information. These are described in the table below.
+
+| index  | content  | description |
+|:------:|:--------:|:------------|
+| 0      | chromosome | The chromosome in the reference species genome |
+| 1      | start position | 0-based start position for the site in the reference species genome |
+| 2      | end position | 0-based end position (end of range) in the reference species genome |
+| 3      | strand	| The strand for the reference species sequence |
+| 4      | species	| A comma delimited list of species in the alignment, ordered reference first and then alphabetically. This column defines the species order of the subsequent columns | 
+| 5      | aligned chromosomes | A comma delimited list of chromosomes aligned at the position for each species | 
+| 6      | aligned positions   | 0-based positions for all species. A '?' is used when a non-reference species is not present within a MAF block and '-' for INDELS in the alignment |
+| 7      | sequences |  The nucleotides aligned at the position in each species. A '?' is used when a non-reference species is not present within a MAF block |
+| 8      | strands | The strands for the nucleotides listed in the sequences column |
+| 9      | score | The score for the MAF alignment block the position is in |
+
 
 # Utility scripts
 ## wga_bed_indels.py
