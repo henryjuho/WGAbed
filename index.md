@@ -1,9 +1,6 @@
-# WGAbed
-## A package for handling whole genome alignments by Pádraic Corcoran and Henry Barton
+## Getting started 
 
 WGAbed is a package that converts of a whole genome alignment file in MAF format to a reference ordered BED format containing all the information in the MAF file but in a more accessible way. The package contains a main script, ```maf_to_bed.py```, which takes care of the file conversion, along with a number of utility scripts for manipulating the resulting ```.wga.bed``` file.
-
-## Getting started 
 
 ### Generating a WGAbed file
 
