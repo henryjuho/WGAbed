@@ -50,6 +50,7 @@ def main():
     parser.add_argument('-min_coverage', help='Minimum species coverage', default=1, type=int)
     parser.add_argument('-ref_specific', help='Restricts output to INDELs only found in reference species, and '
                                               'conserved in non reference species', default=False, action='store_true')
+    parser.add_argument('-lengths', help='Comma separated list of lengths to extract', default=None)
     args = parser.parse_args()
 
     # variables
@@ -68,9 +69,13 @@ def main():
             continue
 
         else:
-            # length check
+            # length checks
             if len(sites[0])-1 > max_len and max_len is not None:
                 continue
+            if args.lengths is not None:
+                lengths = [int(x) for x in args.lengths.split(',')]
+                if len(sites[0])-1 not in lengths:
+                    continue
 
             # coverage check
             if species_in_block(all_pos) < min_spp:
