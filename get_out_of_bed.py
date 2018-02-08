@@ -5,6 +5,76 @@ import argparse
 import pysam
 
 
+def get_start_index(start, seq_list, pos_list):
+
+    """
+    finds where desired sequence starts in interval
+    :param start: int
+    :param seq_list: list
+    :param pos_list: list
+    :return: int
+    """
+
+    # if start or region is the start of the bed line
+    if start == pos_list[0]:
+        return 0
+
+    # if this is a continuation of the region
+    elif start < pos_list[0]:
+        return 0
+
+    # if the region starts within the bed line
+    else:
+        extra_len = start - pos_list[0]
+
+        # find pos in ref seq
+        base_count = 0
+        char_count = 0
+        for b in seq_list[0]:
+            char_count += 1
+            if b != '-':
+                base_count += 1
+                if base_count == extra_len:
+                    break
+
+        return char_count
+
+
+def get_end_index(stop, seq_list, pos_list):
+
+    """
+    finds where desired sequence ends in interval
+    :param stop: int
+    :param seq_list: list
+    :param pos_list: list
+    :return: int
+    """
+
+    # if end of regions is end of bed interval
+    if stop == pos_list[1]:
+        return len(seq_list[0])
+
+    # if end of region is after bed interva;
+    elif stop > pos_list[1]:
+        return len(seq_list[0])
+
+    # if end of region is within feature
+    else:
+        extra_len = pos_list[1] - stop
+
+        # find pos in ref seq
+        base_count = 0
+        char_count = 0
+        for b in seq_list[0][::-1]:
+            char_count += 1
+            if b != '-':
+                base_count += 1
+                if base_count == extra_len:
+                    break
+
+        return -char_count
+
+
 def merge_sequences(seq_list):
 
     """
@@ -45,60 +115,29 @@ def intersect2align(chromo, start, end, wga_bed):
         else:
             gap_fill = ['' for j in range(0, no_species)]
 
+        # if first bed interval returned
         if counter == 1:
+            concat_seqs = ['' for j in range(0, no_species)]
+
             # if beginning of region not in alignment
             if positions[0] > start:
                 missing_len = positions[0] - start
                 seq_correction = [''.join(['N' for i in range(0, missing_len)]) for j in range(0, no_species)]
-                concat_seqs = merge_sequences([seq_correction, sequences])
+                concat_seqs = seq_correction
 
-            # if beginning of region is within first feature
-            elif positions[0] < start:
-                extra_len = start - positions[0]
+        # get section of bed interval needed
+        start_index = get_start_index(start, sequences, positions)
+        stop_index = get_end_index(end, sequences, positions)
+        interval_seqs = [x[start_index:stop_index] for x in sequences]
+        concat_seqs = merge_sequences([concat_seqs, gap_fill, interval_seqs])
 
-                # find pos in ref seq
-                base_count = 0
-                char_count = 0
-                for b in sequences[0]:
-                    char_count += 1
-                    if b != '-':
-                        base_count += 1
-                        if base_count == extra_len:
-                            break
-
-                concat_seqs = [x[char_count:] for x in sequences]
-
-            else:
-                concat_seqs = sequences
-
-        elif counter == len(var_align):
+        # if last bed interval returned
+        if counter == len(var_align):
             # if end of region not in alignment
             if positions[1] < end:
                 missing_len = end - positions[1]
                 seq_correction = [''.join(['N' for i in range(0, missing_len)]) for j in range(0, no_species)]
                 concat_seqs = merge_sequences([concat_seqs, gap_fill, sequences, seq_correction])
-
-            # if end of region is within last feature
-            elif positions[1] > end:
-                extra_len = positions[1] - end
-
-                # find pos in ref seq
-                base_count = 0
-                char_count = 0
-                for b in sequences[0][::-1]:
-                    char_count += 1
-                    if b != '-':
-                        base_count += 1
-                        if base_count == extra_len:
-                            break
-
-                concat_seqs = merge_sequences([concat_seqs, gap_fill, [x[:len(x)-char_count] for x in sequences]])
-
-            else:
-                concat_seqs = merge_sequences([concat_seqs, gap_fill, sequences])
-
-        else:
-            concat_seqs = merge_sequences([concat_seqs, gap_fill, sequences])
 
         previous_end = positions[1]
 
@@ -121,6 +160,7 @@ def main():
 
     # get data out
     extracted_data = intersect2align(q[0], q[1], q[2], wb)
+    print(extracted_data)
 
     if out_format == 'fasta':
         for i in range(0, len(extracted_data[0])):
