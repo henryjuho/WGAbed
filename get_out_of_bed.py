@@ -160,7 +160,6 @@ def main():
 
     # get data out
     extracted_data = intersect2align(q[0], q[1], q[2], wb)
-    print(extracted_data)
 
     if out_format == 'fasta':
         for i in range(0, len(extracted_data[0])):
