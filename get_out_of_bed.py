@@ -86,7 +86,33 @@ def merge_sequences(seq_list):
     return merged_align
 
 
-def intersect2align(chromo, start, end, wga_bed):
+def rm_ins_rel_ref(spp, seq):
+
+    """
+    strips out insertions relative to the ref
+    :param spp: tuple
+    :param seq: list
+    :return: list
+    """
+
+    n_spp = len(spp)
+    trimmed_seqs = ['' for x in spp]
+
+    for pos in range(0, len(seq[0])):
+
+        ref_base = seq[0][pos]
+
+        if ref_base == '-':
+            continue
+
+        spp_seqs = [y[pos] for y in seq]
+
+        trimmed_seqs = [trimmed_seqs[i] + spp_seqs[i] for i in range(0, n_spp)]
+
+    return trimmed_seqs
+
+
+def intersect2align(chromo, start, end, wga_bed, ins_rel_ref=True):
 
     """
     get subregions from wga bed
@@ -94,7 +120,8 @@ def intersect2align(chromo, start, end, wga_bed):
     :param start: int
     :param end: int
     :param wga_bed: str
-    :return:
+    :param ins_rel_ref: bool
+    :return: tuple, list
     """
     var_align = [x for x in wga_bed.fetch(chromo, start, end, parser=pysam.asTuple())]
 
@@ -140,6 +167,9 @@ def intersect2align(chromo, start, end, wga_bed):
                 concat_seqs = merge_sequences([concat_seqs, gap_fill, sequences, seq_correction])
 
         previous_end = positions[1]
+
+    if not ins_rel_ref:
+        concat_seqs = rm_ins_rel_ref(seq_ids, concat_seqs)
 
     return seq_ids, concat_seqs
 
