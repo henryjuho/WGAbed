@@ -96,6 +96,10 @@ def rm_ins_rel_ref(spp, seq):
     """
 
     n_spp = len(spp)
+
+    if n_spp == 0:
+        return []
+
     trimmed_seqs = ['' for x in spp]
 
     for pos in range(0, len(seq[0])):
