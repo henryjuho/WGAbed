@@ -111,9 +111,20 @@ def create_bed_records(aln_block, spec, ref, score):
                         positions.append('NA')
                 else:
                     if indel is False:
-                        positions.append(str(int(aln_block[sp][1]) + pos - gap_count[sp]))
-                        if sp == ref:
-                            ref_start = int(aln_block[sp][1]) + pos - gap_count[sp]
+                        # catch revcomp position here
+                        spp_strand = aln_block[sp][3]
+
+                        current_maf_pos = int(aln_block[sp][1]) + pos - gap_count[sp]
+                        if spp_strand == '+':
+                            positions.append(str(current_maf_pos))
+                            if sp == ref:
+                                ref_start = current_maf_pos
+
+                        # adjust current relative block pos to genomic pos if on negative strand
+                        else:
+                            seq_len = int(aln_block[sp][4])
+                            rev_coord_fix = seq_len - current_maf_pos - 1
+                            positions.append(str(rev_coord_fix))
 
             else:
                 sites[sp] += '?'
