@@ -56,7 +56,7 @@ def main():
     query_spp = args.query_species
     query_chromo = args.chromosome
     non_ref_coords = set(sum([range(int(x.split()[1]), int(x.split()[2])) for x in gzip.open(args.bed_non_ref) if
-                              x.startswith(query_chromo)], []))
+                              x.split()[0] == query_chromo], []))
 
     # loop through wga.bed lines from stdin
     for orig_line in sys.stdin:
