@@ -166,7 +166,7 @@ def rm_missing(spp, seq):
 
         spp_seqs = [y[pos] for y in seq]
 
-        if '-' in ''.join(spp_seqs) or '?' in ''.join(spp_seqs):
+        if 'N' in ''.join(spp_seqs) or '?' in ''.join(spp_seqs):
             continue
 
         trimmed_seqs = [trimmed_seqs[i] + spp_seqs[i] for i in range(0, n_spp)]
