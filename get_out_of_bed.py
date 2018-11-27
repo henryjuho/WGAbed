@@ -184,6 +184,7 @@ def intersect2align(chromo, start, end, wga_bed, ins_rel_ref=True, del_rel_ref=T
     :param wga_bed: str
     :param ins_rel_ref: bool
     :param del_rel_ref: bool
+    :param missing: bool
     :return: tuple, list
     """
     var_align = [x for x in wga_bed.fetch(chromo, start, end, parser=pysam.asTuple())]
