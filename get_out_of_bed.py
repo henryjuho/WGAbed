@@ -146,7 +146,35 @@ def rm_del_rel_ref(spp, seq):
     return trimmed_seqs
 
 
-def intersect2align(chromo, start, end, wga_bed, ins_rel_ref=True, del_rel_ref=True):
+def rm_missing(spp, seq):
+
+    """
+    strips out missing sequence '?' or 'N'
+    :param spp: tuple
+    :param seq: list
+    :return: list
+    """
+
+    n_spp = len(spp)
+
+    if n_spp == 0:
+        return []
+
+    trimmed_seqs = ['' for x in spp]
+
+    for pos in range(0, len(seq[0])):
+
+        spp_seqs = [y[pos] for y in seq]
+
+        if '-' in ''.join(spp_seqs) or '?' in ''.join(spp_seqs):
+            continue
+
+        trimmed_seqs = [trimmed_seqs[i] + spp_seqs[i] for i in range(0, n_spp)]
+
+    return trimmed_seqs
+
+
+def intersect2align(chromo, start, end, wga_bed, ins_rel_ref=True, del_rel_ref=True, missing=True):
 
     """
     get subregions from wga bed
@@ -207,6 +235,8 @@ def intersect2align(chromo, start, end, wga_bed, ins_rel_ref=True, del_rel_ref=T
         concat_seqs = rm_ins_rel_ref(seq_ids, concat_seqs)
     if not del_rel_ref:
         concat_seqs = rm_del_rel_ref(seq_ids, concat_seqs)
+    if not missing:
+        concat_seqs = rm_missing(seq_ids, concat_seqs)
 
     return seq_ids, concat_seqs
 
