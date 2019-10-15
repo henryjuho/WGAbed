@@ -90,7 +90,7 @@ def create_bed_records(aln_block, spec, ref, score):
             for sp in spec:
                 if sp in aln_block.keys():
                     if aln_block[sp][5][pos] == '-':
-                            gap_count[sp] += 1
+                        gap_count[sp] += 1
             continue
 
         for sp in spec:
@@ -197,7 +197,7 @@ def main():
                 continue
             elif line.startswith('s'):
                 species = line.split()
-                align_block[species[1].split('.')[0]] = [species[1].split('.')[1]] + species[2:]
+                align_block[species[1].split('.')[0]] = ['.'.join(species[1].split('.')[1:])] + species[2:]
 
             else:
                 # block_start = 0
@@ -221,6 +221,7 @@ def main():
                                 align_block[s][3] = '-'
 
                     create_bed_records(align_block, species_list, ref_species, align_score)
+
 
 if __name__ == '__main__':
     main()
