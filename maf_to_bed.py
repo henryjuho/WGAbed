@@ -179,7 +179,7 @@ def main():
     ref_species = args.ref_species
 
     # generate list of species in maf file, reference first, then alphabetical
-    spp_grep = "zgrep ^s " + args.infile + " | cut -d '.' -f 1 | cut -d ' ' -f 2 | less -S | sort -u"
+    spp_grep = "zgrep ^s " + args.infile + " | head -n 50000 | cut -d '.' -f 1 | cut -d ' ' -f 2 | less -S | sort -u"
     species_list = subprocess.Popen(spp_grep, shell=True, stdout=subprocess.PIPE).communicate()[0].split('\n')[:-1]
     species_list.remove(ref_species)
     species_list = [ref_species] + sorted(species_list)
