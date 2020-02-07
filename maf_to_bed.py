@@ -192,7 +192,13 @@ def main():
             if line.startswith('#'):
                 continue
             elif line.startswith('a'):
-                align_score = line.split()[1].split('=')[1]
+
+                # deal with cases where alignment scores not in file
+                try:
+                    align_score = line.split()[1].split('=')[1]
+                except IndexError:
+                    align_score = 'nan'
+
                 align_block = {}
                 continue
             elif line.startswith('s'):
